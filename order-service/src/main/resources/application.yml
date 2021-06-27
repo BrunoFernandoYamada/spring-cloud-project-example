@@ -1,0 +1,9 @@
+server:
+  port: 9192
+spring:
+  application:
+    name: order-server
+  h2:
+    console:
+      enabled: true
+
