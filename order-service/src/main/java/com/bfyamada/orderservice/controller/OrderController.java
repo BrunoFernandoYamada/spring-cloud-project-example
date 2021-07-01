@@ -4,6 +4,7 @@ import com.bfyamada.orderservice.dto.TransactionRequest;
 import com.bfyamada.orderservice.dto.TransactionResponse;
 import com.bfyamada.orderservice.entity.Order;
 import com.bfyamada.orderservice.service.OrderService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,7 +30,7 @@ public class OrderController {
     }
 
     @PostMapping("/bulkOrder")
-    private ResponseEntity<TransactionResponse> bulkOrder(@RequestBody TransactionRequest request){
+    private ResponseEntity<TransactionResponse> bulkOrder(@RequestBody TransactionRequest request) throws JsonProcessingException {
         return ResponseEntity.ok(service.bulkOrderAndPayment(request));
     }
 }

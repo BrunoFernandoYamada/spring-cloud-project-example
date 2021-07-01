@@ -6,6 +6,10 @@ import com.bfyamada.orderservice.dto.TransactionResponse;
 import com.bfyamada.orderservice.entity.Order;
 import com.bfyamada.orderservice.feignClients.PaymentFeignClient;
 import com.bfyamada.orderservice.repository.OrderRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,11 +22,13 @@ public class OrderService {
     @Autowired
     private PaymentFeignClient paymentFeignClient;
 
+    private Logger LOGGER = LoggerFactory.getLogger(OrderService.class);
+
     public Order saveOrder(Order order){
         return repo.save(order);
     }
 
-    public TransactionResponse bulkOrderAndPayment(TransactionRequest request){
+    public TransactionResponse bulkOrderAndPayment(TransactionRequest request) throws JsonProcessingException {
         TransactionResponse response = new TransactionResponse();
 
         Order order = request.getOrder();
@@ -34,8 +40,11 @@ public class OrderService {
         payment.setOrderId(order.getId());
         payment.setAmount(order.getPrice());
 
+        LOGGER.info("OrderService request : {}", new ObjectMapper().writeValueAsString(request));
+
         Payment paymentResponse =  paymentFeignClient.doPayment(payment).getBody();
 
+        LOGGER.info("Payment-service response from OrderService Rest call : {}", new ObjectMapper().writeValueAsString(paymentResponse));
         if(paymentResponse.getPaymentStatus().equals("Success")){
             response.setMessage("Payment processing successful and order placed");
         }else{
