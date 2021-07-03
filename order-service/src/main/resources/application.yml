@@ -3,6 +3,8 @@ server:
 spring:
   application:
     name: order-service
+  zipkin:
+    base-ul: http://localhost:9411/
   h2:
     console:
       enabled: true
